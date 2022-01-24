@@ -85,24 +85,24 @@ public class App extends Application {
         movPincho.play();
         //Salto del jugador
         scene.setOnKeyPressed((KeyEvent event) -> {
-            Timeline movJug = new Timeline(
+            if(event.getCode() == KeyCode.UP && posYJug == 435) { //Si pulsas arriba el jugador salta
+                velSalto = -1;
+                    }
+        });
+        Timeline movJug = new Timeline(
                 new KeyFrame(Duration.seconds(0.005), (ActionEvent ae) -> {
                     posYJug += velSalto;
-                    if(event.getCode() == KeyCode.UP) { //Si pulsas arriba el jugador salta
-                        velSalto = -1;
-                        groupCubo.setLayoutY(posYJug);
-                    }
-                    if(posYJug ==370) {
+                    groupCubo.setLayoutY(posYJug);
+                    if(posYJug <= 350) {
                         velSalto = 1;
+                    }
+                    if(posYJug == 435) {
+                        velSalto = 0;
                     }
                 })
             );
-            movJug.setCycleCount(Timeline.INDEFINITE);
-            movJug.play();
-        });
-        if(posYJug == 435) {
-            velSalto = 0;
-        }
+        movJug.setCycleCount(Timeline.INDEFINITE);
+        movJug.play();
     }
 
     public static void main(String[] args) {
