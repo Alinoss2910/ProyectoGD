@@ -51,17 +51,23 @@ public class App extends Application {
         ImageView imgView = new ImageView(img);
         ImageView imgViewPin = new ImageView(imgPincho);
         ImageView imgViewCubo = new ImageView(imgCubo);
+        imgViewPin.setLayoutX(0);
+        imgViewPin.setLayoutY(0);
+        imgViewCubo.setLayoutX(0);
+        imgViewCubo.setLayoutY(0);
         //Poner la imagen de fondo
         paneRoot.getChildren().add(imgView);
         //Define objeto pincho
-        Rectangle pincho = new Rectangle(posPinX, POSYPIN, 50, 50);
-        pincho.setFill(Color.TRANSPARENT);
+        Rectangle pincho = new Rectangle(15, 15, 20, 20);
+        pincho.setFill(Color.BLACK);
+        
         groupPincho.getChildren().add(pincho);
         groupPincho.getChildren().add(imgViewPin);
         //Define Jugador
-        Rectangle jugador = new Rectangle(posXJug, posYJug, 50, 50);
+        Rectangle jugador = new Rectangle(0, 0, 50, 50);
+        jugador.setFill(Color.BLACK);
         groupCubo.getChildren().add(jugador);
-        groupCubo.getChildren().add(imgViewCubo);
+        //groupCubo.getChildren().add(imgViewCubo);
         //Añade a la pantalla los grupos
         paneRoot.getChildren().add(groupPincho);
         paneRoot.getChildren().add(groupCubo);
@@ -72,9 +78,9 @@ public class App extends Application {
         groupCubo.setLayoutX(posXJug);
         //Timeline de movimiento pincho
         Timeline movPincho = new Timeline(
-                new KeyFrame(Duration.seconds(0.005), (ActionEvent ae) -> {
+                new KeyFrame(Duration.seconds(0.017), (ActionEvent ae) -> {
                     //Cambiar poscision pincho
-                    posPinX -= 1;
+                    posPinX -= 5;
                     groupPincho.setLayoutX(posPinX);
                     if(posPinX == -50) {
                         posPinX = 690;
@@ -93,12 +99,17 @@ public class App extends Application {
                 new KeyFrame(Duration.seconds(0.005), (ActionEvent ae) -> {
                     posYJug += velSalto;
                     groupCubo.setLayoutY(posYJug);
-                    if(posYJug <= 350) {
+                    groupCubo.setLayoutX(posXJug);
+                    if(posYJug <= 330) {
                         velSalto = 1;
                     }
                     if(posYJug == 435) {
                         velSalto = 0;
                     }
+                    /*if(posXJug +50 >= posPinX && posYJug >= POSYPIN ){
+                        posPinX = 690;
+                        System.out.println("HOLA");
+                    }*/
                 })
             );
         movJug.setCycleCount(Timeline.INDEFINITE);
