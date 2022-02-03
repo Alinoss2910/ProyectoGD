@@ -1,21 +1,30 @@
 package es.airamlinares.gd;
 
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Random;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.media.AudioClip;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -36,10 +45,15 @@ public class App extends Application {
     int posYJug = 435;
     int velSalto;    
     int cantPinchos = 15;
+    int min = 1;
+    int sec = 0;
     ImageView imgViewPin;
     ImageView imgViewPin2;
     ImageView imgViewPin3;
     ImageView imgViewCubo;
+    AudioClip audioClip1;
+    Label inicio;
+    Text textTiempo;
 
     @Override
     public void start(Stage stage) {
@@ -50,22 +64,19 @@ public class App extends Application {
         stage.setTitle("Geometry Dash");
         stage.setScene(scene);
         stage.show();
+        System.out.println(sec);
         //Definir grupos
         groupPincho = new Group();
         groupCubo = new Group();
         groupPincho2 = new Group();
         groupPincho3 = new Group();
         Random random = new Random();
-        //Llama al metodo de cargar las imagenes
+        //Llamamada a los metodos
         cargarImgs(paneRoot);
-        Rectangle pincho = crearPincho1(paneRoot);
-        Rectangle pincho2 = crearPincho2(paneRoot);
-        Rectangle pincho3 = crearPincho3(paneRoot);
-        Rectangle jugador = crearJugador(paneRoot);
-        posInic();
-        saltoJug(scene);
-        movPinchos(pincho, pincho2, pincho3, jugador);
-        salidaPinchosAleatorio(random);
+        empezarPartidaLabel(paneRoot);
+        empezarPartida(scene, paneRoot, random);
+        
+        
     }
 
     public static void main(String[] args) {
@@ -168,58 +179,77 @@ public class App extends Application {
     }
     private void colPin1(Rectangle jugador, Rectangle pincho) {
         Shape shapeColision = Shape.intersect(jugador, pincho);
-            boolean colisionVacia = shapeColision.getBoundsInLocal().isEmpty();
-            if(colisionVacia == false) {
-                //Detecta colision
-                posPinX = 690;
-                groupPincho.setLayoutX(posPinX);
-                posPinX2 = 990;
-                groupPincho2.setLayoutX(posPinX2);
-                posPinX3 = 1040;
-                groupPincho3.setLayoutX(posPinX3);
-            }
+        boolean colisionVacia = shapeColision.getBoundsInLocal().isEmpty();
+        if(colisionVacia == false) {
+            System.out.println("colision pin 1");
+            //Detecta colision
+            posPinX = 690;
+            groupPincho.setLayoutX(posPinX);
+            posPinX2 = 990;
+            groupPincho2.setLayoutX(posPinX2);
+            posPinX3 = 1040;
+            groupPincho3.setLayoutX(posPinX3);
+            audioClip1.stop();
+            sec = 0;
+            min = 0;
+            textTiempo.setText(String.valueOf("0:0"));
+            audioClip1.play();
+        }
     }
     private void colPin2(Rectangle jugador, Rectangle pincho2) {
         Shape shapeColision2 = Shape.intersect(jugador, pincho2);
-            boolean colisionVacia2 = shapeColision2.getBoundsInLocal().isEmpty();
-            if(colisionVacia2 == false) {
-                //Detecta colision
-                posPinX = 690;
-                groupPincho.setLayoutX(posPinX);
-                posPinX2 = 990;
-                groupPincho2.setLayoutX(posPinX2);
-                posPinX3 = 1040;
-                groupPincho3.setLayoutX(posPinX3);
-            }
+        boolean colisionVacia2 = shapeColision2.getBoundsInLocal().isEmpty();
+        if(colisionVacia2 == false) {
+            System.out.println("Ha colisionado 2");
+            //Detecta colision
+            posPinX = 690;
+            groupPincho.setLayoutX(posPinX);
+            posPinX2 = 990;
+            groupPincho2.setLayoutX(posPinX2);
+            posPinX3 = 1040;
+            groupPincho3.setLayoutX(posPinX3);
+            audioClip1.stop();
+            sec = 0;
+            min = 0;
+            textTiempo.setText(String.valueOf("0:0"));
+            audioClip1.play();
+        }
     }
     private void colPin3(Rectangle jugador, Rectangle pincho3) {
         Shape shapeColision3 = Shape.intersect(jugador, pincho3);
-            boolean colisionVacia3 = shapeColision3.getBoundsInLocal().isEmpty();
-            if(colisionVacia3 == false) {
-                //Detecta colision
-                posPinX = 690;
-                groupPincho.setLayoutX(posPinX);
-                posPinX2 = 990;
-                groupPincho2.setLayoutX(posPinX2);
-                posPinX3 = 1040;
-                groupPincho3.setLayoutX(posPinX3);
-            }
+        boolean colisionVacia3 = shapeColision3.getBoundsInLocal().isEmpty();
+        if(colisionVacia3 == false) {
+            System.out.println("ha colisionado 3");
+            //Detecta colision
+            posPinX = 690;
+            groupPincho.setLayoutX(posPinX);
+            posPinX2 = 990;
+            groupPincho2.setLayoutX(posPinX2);
+            posPinX3 = 1040;
+            groupPincho3.setLayoutX(posPinX3);
+            audioClip1.stop();
+            sec = 0;
+            min = 0;
+            textTiempo.setText(String.valueOf("0:0"));
+            audioClip1.play();
+        }
     }
-    private void movPinchos(Rectangle jugador, Rectangle pincho, Rectangle pincho2, Rectangle pincho3 ) {
+    private void movPinchos(Rectangle jugador, Rectangle pincho, Rectangle pincho2, Rectangle pincho3) {
         //Timeline de movimiento pincho
         Timeline movPincho = new Timeline(
-                new KeyFrame(Duration.seconds(0.017), (ActionEvent ae) -> {
-                    //Cambiar poscision pincho
-                    posPinX -= 5;
-                    groupPincho.setLayoutX(posPinX);
-                    posPinX2 -= 5;
-                    groupPincho2.setLayoutX(posPinX2);
-                    posPinX3 -= 5;
-                    groupPincho3.setLayoutX(posPinX3);
-                    colPin1(jugador, pincho);
-                    colPin2(jugador, pincho2);
-                    colPin3(jugador, pincho3);
-                })
+            new KeyFrame(Duration.seconds(0.017), (ActionEvent ae) -> {
+
+                //Cambiar poscision pincho
+                posPinX -= 5;
+                groupPincho.setLayoutX(posPinX);
+                posPinX2 -= 5;
+                groupPincho2.setLayoutX(posPinX2);
+                posPinX3 -= 5;
+                groupPincho3.setLayoutX(posPinX3);
+                colPin1(jugador, pincho);
+                colPin2(jugador, pincho2);
+                colPin3(jugador, pincho3);
+            })
         );
         movPincho.setCycleCount(Timeline.INDEFINITE);
         movPincho.play();
@@ -261,5 +291,92 @@ public class App extends Application {
         );
         aleatorioPincho.setCycleCount(Timeline.INDEFINITE);
         aleatorioPincho.play();
+    }
+    private void cancion() {
+        URL urlAudio = getClass().getResource("/audio/cancion.mp3");
+        if(urlAudio != null) {
+            try {
+                audioClip1 = new AudioClip(urlAudio.toURI().toString());
+                audioClip1.play();
+            } catch (URISyntaxException ex) {
+                System.out.println("Error en el formato de ruta de archivo de audio");
+        }            
+        } else {
+            System.out.println("No se ha encontrado el archivo de audio");
+        }
+    }
+    private void contCancion(Pane paneRoot) {
+        //Hbox de tiempo
+        HBox tiempo = new HBox();
+        tiempo.setAlignment(Pos.CENTER);
+        tiempo.setSpacing(10);
+        paneRoot.getChildren().add(tiempo);
+        //Texto que siempre pondra tiempo
+        Text textEtTiempo = new Text("Tiempo:");
+        textEtTiempo.setFont(Font.font(20));
+        textEtTiempo.setFill(Color.BLACK);
+        tiempo.getChildren().add(textEtTiempo);
+        //Texto que se atualizara con el tiempo
+        textTiempo = new Text("");
+        textTiempo.setFont(Font.font(20));
+        textTiempo.setFill(Color.BLACK);
+        tiempo.getChildren().add(textTiempo);
+        //TimeLine Para actualizar el tiempo
+        Timeline contTiempo = new Timeline(
+            new KeyFrame(Duration.seconds(1), (ActionEvent ae) -> {
+                sec++;
+                if(sec == 60) {
+                    min += 1;
+                    sec = 0;
+                }
+                textTiempo.setText(String.valueOf(min+":"+sec));
+            })
+        );
+        contTiempo.setCycleCount(Timeline.INDEFINITE);
+        contTiempo.play();
+    }
+    private void empezarPartidaLabel(Pane paneRoot) {
+        inicio = new Label("Por favor conecta unos auriculares y pulsa ENTER");
+        Font font = Font.font("Bahnschrift", FontWeight.BLACK, FontPosture.REGULAR, 25);
+        inicio.setFont(font);
+        inicio.setTextFill(Color.BLACK);
+        inicio.setTranslateX(20);
+        inicio.setTranslateY(200);
+        paneRoot.getChildren().add(inicio);
+    }
+    private void empezarPartida(Scene scene, Pane paneRoot, Random random) {
+        scene.setOnKeyPressed((KeyEvent event) -> {
+            if(event.getCode() == KeyCode.ENTER) { //Si pulsas ENTER empiezas a jugar
+                inicio.setTextFill(Color.TRANSPARENT);
+                cancion();
+                Rectangle pincho = crearPincho1(paneRoot);
+                Rectangle pincho2 = crearPincho2(paneRoot);
+                Rectangle pincho3 = crearPincho3(paneRoot);
+                Rectangle jugador = crearJugador(paneRoot);
+                posInic();
+                saltoJug(scene);
+                movPinchos(jugador, pincho, pincho2, pincho3);
+                contCancion(paneRoot);
+                salidaPinchosAleatorio(random);
+                fin(paneRoot);
+            }
+        });
+    }
+    private void fin(Pane paneRoot){
+        
+        if(min == 1 && sec == 4) {
+            
+            groupPincho.setLayoutX(100000);
+            groupCubo.setLayoutX(10000);
+            groupPincho2.setLayoutX(100000);
+            groupPincho3.setLayoutX(100000);
+            Label labelFin = new Label("COMPLETADO!!!");
+            Font font = Font.font("Bahnschrift", FontWeight.BLACK, FontPosture.REGULAR, 25);
+            labelFin.setFont(font);
+            labelFin.setTextFill(Color.BLACK);
+            labelFin.setTranslateX(20);
+            labelFin.setTranslateY(200);
+            paneRoot.getChildren().add(labelFin);
+        }
     }
 }
