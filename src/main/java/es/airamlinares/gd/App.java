@@ -37,6 +37,7 @@ public class App extends Application {
     Group groupPincho2;
     Group groupPincho3;
     Group groupCubo;
+    boolean enJuego;
     int posPinX = 690;
     int posPinX2 = 990;
     int posPinX3 = 1040;    
@@ -45,8 +46,8 @@ public class App extends Application {
     int posYJug = 435;
     int velSalto;    
     int cantPinchos = 15;
-    int min = 1;
-    int sec = 0;
+    int min = 0;
+    int sec = 3;
     ImageView imgViewPin;
     ImageView imgViewPin2;
     ImageView imgViewPin3;
@@ -64,7 +65,7 @@ public class App extends Application {
         stage.setTitle("Geometry Dash");
         stage.setScene(scene);
         stage.show();
-        System.out.println(sec);
+        
         //Definir grupos
         groupPincho = new Group();
         groupCubo = new Group();
@@ -238,17 +239,18 @@ public class App extends Application {
         //Timeline de movimiento pincho
         Timeline movPincho = new Timeline(
             new KeyFrame(Duration.seconds(0.017), (ActionEvent ae) -> {
-
-                //Cambiar poscision pincho
-                posPinX -= 5;
-                groupPincho.setLayoutX(posPinX);
-                posPinX2 -= 5;
-                groupPincho2.setLayoutX(posPinX2);
-                posPinX3 -= 5;
-                groupPincho3.setLayoutX(posPinX3);
-                colPin1(jugador, pincho);
-                colPin2(jugador, pincho2);
-                colPin3(jugador, pincho3);
+                if(enJuego == true) {
+                    //Cambiar poscision pincho
+                    posPinX -= 5;
+                    groupPincho.setLayoutX(posPinX);
+                    posPinX2 -= 5;
+                    groupPincho2.setLayoutX(posPinX2);
+                    posPinX3 -= 5;
+                    groupPincho3.setLayoutX(posPinX3);
+                    colPin1(jugador, pincho);
+                    colPin2(jugador, pincho2);
+                    colPin3(jugador, pincho3);
+                }
             })
         );
         movPincho.setCycleCount(Timeline.INDEFINITE);
@@ -306,6 +308,7 @@ public class App extends Application {
         }
     }
     private void contCancion(Pane paneRoot) {
+        
         //Hbox de tiempo
         HBox tiempo = new HBox();
         tiempo.setAlignment(Pos.CENTER);
@@ -324,13 +327,14 @@ public class App extends Application {
         //TimeLine Para actualizar el tiempo
         Timeline contTiempo = new Timeline(
             new KeyFrame(Duration.seconds(1), (ActionEvent ae) -> {
-                sec++;
-                if(sec == 60) {
-                    min += 1;
-                    sec = 0;
+                sec--;
+                if(sec == -1) {
+                    min -= 1;
+                    sec = 59;
                 }
                 textTiempo.setText(String.valueOf(min+":"+sec));
-            })
+                fin(paneRoot);
+            })    
         );
         contTiempo.setCycleCount(Timeline.INDEFINITE);
         contTiempo.play();
@@ -347,6 +351,7 @@ public class App extends Application {
     private void empezarPartida(Scene scene, Pane paneRoot, Random random) {
         scene.setOnKeyPressed((KeyEvent event) -> {
             if(event.getCode() == KeyCode.ENTER) { //Si pulsas ENTER empiezas a jugar
+                enJuego = true;
                 inicio.setTextFill(Color.TRANSPARENT);
                 cancion();
                 Rectangle pincho = crearPincho1(paneRoot);
@@ -358,24 +363,24 @@ public class App extends Application {
                 movPinchos(jugador, pincho, pincho2, pincho3);
                 contCancion(paneRoot);
                 salidaPinchosAleatorio(random);
-                fin(paneRoot);
             }
         });
     }
     private void fin(Pane paneRoot){
-        
-        if(min == 1 && sec == 4) {
-            
+        System.out.println(sec);
+        if(min == 0 && sec == 0) {
+            enJuego = false;
+            System.out.println("fin");
             groupPincho.setLayoutX(100000);
-            groupCubo.setLayoutX(10000);
+            groupCubo.setLayoutX(100000);
             groupPincho2.setLayoutX(100000);
             groupPincho3.setLayoutX(100000);
             Label labelFin = new Label("COMPLETADO!!!");
             Font font = Font.font("Bahnschrift", FontWeight.BLACK, FontPosture.REGULAR, 25);
             labelFin.setFont(font);
-            labelFin.setTextFill(Color.BLACK);
-            labelFin.setTranslateX(20);
-            labelFin.setTranslateY(200);
+            labelFin.setTextFill(Color.YELLOW);
+            labelFin.setTranslateX(100);
+            labelFin.setTranslateY(100);
             paneRoot.getChildren().add(labelFin);
         }
     }
