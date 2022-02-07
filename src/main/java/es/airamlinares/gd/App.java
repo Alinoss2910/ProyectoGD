@@ -6,6 +6,7 @@ import java.util.Random;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import static javafx.application.Application.launch;
 import javafx.event.ActionEvent;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -33,11 +34,12 @@ import javafx.util.Duration;
  * JavaFX App
  */
 public class App extends Application {
-    Group groupPincho;
-    Group groupPincho2;
-    Group groupPincho3;
-    Group groupCubo;
-    boolean enJuego;
+    Group groupPincho = new Group();
+    Group groupPincho2 = new Group();
+    Group groupPincho3 = new Group();
+    Group groupCubo = new Group();
+    boolean enJuego  = false;
+    boolean reset = false;
     int posPinX = 690;
     int posPinX2 = 990;
     int posPinX3 = 1040;    
@@ -47,7 +49,7 @@ public class App extends Application {
     int velSalto;    
     int cantPinchos = 15;
     int min = 0;
-    int sec = 3;
+    int sec = 5;
     ImageView imgViewPin;
     ImageView imgViewPin2;
     ImageView imgViewPin3;
@@ -55,29 +57,23 @@ public class App extends Application {
     AudioClip audioClip1;
     Label inicio;
     Text textTiempo;
+    Text textEtTiempo;
 
     @Override
     public void start(Stage stage) {
         //Panel Principal
         Pane paneRoot = new Pane();
         var scene = new Scene(paneRoot, 640, 480);
+        stage.getIcons().add(new Image("/images/icono.png"));
         stage.setResizable(false);
         stage.setTitle("Geometry Dash");
         stage.setScene(scene);
         stage.show();
-        
-        //Definir grupos
-        groupPincho = new Group();
-        groupCubo = new Group();
-        groupPincho2 = new Group();
-        groupPincho3 = new Group();
         Random random = new Random();
         //Llamamada a los metodos
         cargarImgs(paneRoot);
         empezarPartidaLabel(paneRoot);
-        empezarPartida(scene, paneRoot, random);
-        
-        
+        empezarPartida(scene, paneRoot, random, stage);   
     }
 
     public static void main(String[] args) {
@@ -155,13 +151,11 @@ public class App extends Application {
         groupCubo.setLayoutY(posYJug);
         groupCubo.setLayoutX(posXJug);
     }
-    private void saltoJug(Scene scene) {
-        //Salto del jugador
-        scene.setOnKeyPressed((KeyEvent event) -> {
-            if(event.getCode() == KeyCode.UP && posYJug == 435) { //Si pulsas arriba el jugador salta
-                velSalto = -4;
-            }
-        });
+    private void saltoJug(Scene scene, Stage stage, Pane paneRoot, Random random) {
+        if(enJuego = true) {
+            System.out.println("salto");
+            //Salto del jugador
+        detectTeclas(scene, stage, paneRoot, random);
         Timeline movJug = new Timeline(
                 new KeyFrame(Duration.seconds(0.017), (ActionEvent ae) -> {
                     posYJug += velSalto;
@@ -177,6 +171,7 @@ public class App extends Application {
         );
         movJug.setCycleCount(Timeline.INDEFINITE);
         movJug.play();
+        }
     }
     private void colPin1(Rectangle jugador, Rectangle pincho) {
         Shape shapeColision = Shape.intersect(jugador, pincho);
@@ -191,9 +186,9 @@ public class App extends Application {
             posPinX3 = 1040;
             groupPincho3.setLayoutX(posPinX3);
             audioClip1.stop();
-            sec = 0;
-            min = 0;
-            textTiempo.setText(String.valueOf("0:0"));
+            sec = 25;
+            min = 1;
+            textTiempo.setText(String.valueOf("1:25"));
             audioClip1.play();
         }
     }
@@ -210,9 +205,9 @@ public class App extends Application {
             posPinX3 = 1040;
             groupPincho3.setLayoutX(posPinX3);
             audioClip1.stop();
-            sec = 0;
-            min = 0;
-            textTiempo.setText(String.valueOf("0:0"));
+            sec = 25;
+            min = 1;
+            textTiempo.setText(String.valueOf("1:25"));
             audioClip1.play();
         }
     }
@@ -229,9 +224,9 @@ public class App extends Application {
             posPinX3 = 1040;
             groupPincho3.setLayoutX(posPinX3);
             audioClip1.stop();
-            sec = 0;
-            min = 0;
-            textTiempo.setText(String.valueOf("0:0"));
+            sec = 25;
+            min = 1;
+            textTiempo.setText(String.valueOf("1:25"));
             audioClip1.play();
         }
     }
@@ -307,7 +302,7 @@ public class App extends Application {
             System.out.println("No se ha encontrado el archivo de audio");
         }
     }
-    private void contCancion(Pane paneRoot) {
+    private void contCancion(Pane paneRoot, Stage stage, Scene scene, Random random) {
         
         //Hbox de tiempo
         HBox tiempo = new HBox();
@@ -315,7 +310,7 @@ public class App extends Application {
         tiempo.setSpacing(10);
         paneRoot.getChildren().add(tiempo);
         //Texto que siempre pondra tiempo
-        Text textEtTiempo = new Text("Tiempo:");
+        textEtTiempo = new Text("Tiempo:");
         textEtTiempo.setFont(Font.font(20));
         textEtTiempo.setFill(Color.BLACK);
         tiempo.getChildren().add(textEtTiempo);
@@ -333,7 +328,7 @@ public class App extends Application {
                     sec = 59;
                 }
                 textTiempo.setText(String.valueOf(min+":"+sec));
-                fin(paneRoot);
+                fin(paneRoot, stage, scene, random);
             })    
         );
         contTiempo.setCycleCount(Timeline.INDEFINITE);
@@ -348,28 +343,17 @@ public class App extends Application {
         inicio.setTranslateY(200);
         paneRoot.getChildren().add(inicio);
     }
-    private void empezarPartida(Scene scene, Pane paneRoot, Random random) {
-        scene.setOnKeyPressed((KeyEvent event) -> {
-            if(event.getCode() == KeyCode.ENTER) { //Si pulsas ENTER empiezas a jugar
-                enJuego = true;
-                inicio.setTextFill(Color.TRANSPARENT);
-                cancion();
-                Rectangle pincho = crearPincho1(paneRoot);
-                Rectangle pincho2 = crearPincho2(paneRoot);
-                Rectangle pincho3 = crearPincho3(paneRoot);
-                Rectangle jugador = crearJugador(paneRoot);
-                posInic();
-                saltoJug(scene);
-                movPinchos(jugador, pincho, pincho2, pincho3);
-                contCancion(paneRoot);
-                salidaPinchosAleatorio(random);
-            }
-        });
+    private void empezarPartida(Scene scene, Pane paneRoot, Random random, Stage stage) {
+        if (enJuego == false) {
+            System.out.println("empP");
+            detectTeclas(scene, stage, paneRoot, random);
+        } 
     }
-    private void fin(Pane paneRoot){
+    private void fin(Pane paneRoot, Stage stage, Scene scene, Random random){
         System.out.println(sec);
         if(min == 0 && sec == 0) {
             enJuego = false;
+            reset = true;
             System.out.println("fin");
             groupPincho.setLayoutX(100000);
             groupCubo.setLayoutX(100000);
@@ -382,6 +366,43 @@ public class App extends Application {
             labelFin.setTranslateX(100);
             labelFin.setTranslateY(100);
             paneRoot.getChildren().add(labelFin);
+            audioClip1.stop();
+            textTiempo.setFill(Color.TRANSPARENT);
+            textEtTiempo.setFill(Color.TRANSPARENT);
+            resetGame(scene, stage, paneRoot, random);
         }
+    }
+    private void resetGame(Scene scene, Stage stage, Pane paneRoot, Random random) {
+        if(reset == true) {
+            System.out.println("reset");
+            detectTeclas(scene, stage, paneRoot, random);
+        }
+    }
+    private void detectTeclas(Scene scene, Stage stage, Pane paneRoot, Random random) {
+        scene.setOnKeyPressed((KeyEvent event) -> {
+            if(event.getCode() == KeyCode.ESCAPE) { //Si pulsas ESC sale del juego
+                stage.close();
+            }
+            if(event.getCode() == KeyCode.DOWN) { //Si pulsas ENTER se reinicia el juego
+                start(stage);
+            }
+            if(event.getCode() == KeyCode.UP && posYJug == 435) { //Si pulsas arriba el jugador salta
+                velSalto = -4;
+            }
+            if(event.getCode() == KeyCode.ENTER) { //Si pulsas ENTER empiezas a jugar
+                enJuego = true;
+                inicio.setTextFill(Color.TRANSPARENT);
+                cancion();
+                Rectangle pincho = crearPincho1(paneRoot);
+                Rectangle pincho2 = crearPincho2(paneRoot);
+                Rectangle pincho3 = crearPincho3(paneRoot);
+                Rectangle jugador = crearJugador(paneRoot);
+                posInic();
+                saltoJug(scene, stage, paneRoot, random);
+                movPinchos(jugador, pincho, pincho2, pincho3);
+                contCancion(paneRoot, stage, scene, random);
+                salidaPinchosAleatorio(random);
+            }
+        });
     }
 }
